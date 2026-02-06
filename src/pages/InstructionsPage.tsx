@@ -1,3 +1,4 @@
+import api from "../config/api";
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -21,8 +22,13 @@ function InstructionsPage() {
     const load = async () => {
       if (!attemptId || !userId) return
       try {
-        const response = await fetch(`http://localhost:5000/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
-        const data = await response.json()
+        const response = await api.get(
+          '/api/mock-tests/attempt/${attemptId}',
+          {
+            params: { userId }
+          }
+        )
+        const data = response.data
         if (!response.ok) return
         setTestInfo({
           subject: data.subject,
@@ -109,3 +115,4 @@ function InstructionsPage() {
 }
 
 export default InstructionsPage
+
