@@ -20,15 +20,13 @@ function LoginPage() {
 
     try {
       // Call backend authentication API
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password })
-      })
+      const response = await api.post("/api/auth/login", {
+        email,
+        password
+      });
+      
+      const data = response.data;
 
-      const data = await response.json()
 
       if (response.ok) {
         // Store user info and role in localStorage
@@ -154,4 +152,5 @@ function LoginPage() {
 }
 
 export default LoginPage
+
 
