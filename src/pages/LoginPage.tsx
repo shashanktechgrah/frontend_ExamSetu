@@ -20,38 +20,32 @@ function LoginPage() {
     setLoading(true)
 
     try {
-      // Call backend authentication API
       const response = await api.post("/api/auth/login", {
         email,
         password
       });
-      
+    
       const data = response.data;
-
-
-      if (response.ok) {
-        // Store user info and role in localStorage
-        localStorage.setItem('user', JSON.stringify(data.user))
-        localStorage.setItem('userRole', data.user.role)
-        localStorage.setItem('userName', data.user.name)
-        localStorage.setItem('userId', String(data.user.id))
-        localStorage.setItem('studentName', data.user.name)
-        
-        // Navigate based on role
-        if (data.user.role === 'ADMIN' || data.user.role === 'TEACHER') {
-          navigate('/admin-dashboard')
-        } else if (data.user.role === 'STUDENT') {
-          navigate('/dashboard')
-        }
-      } else {
-        // Show error message
-        alert(data.error || 'Login failed')
+    
+      // ✅ If we reached here, login is SUCCESSFUL
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('userRole', data.user.role);
+      localStorage.setItem('userName', data.user.name);
+      localStorage.setItem('userId', String(data.user.id));
+      localStorage.setItem('studentName', data.user.name);
+    
+      // Navigate based on role
+      if (data.user.role === 'ADMIN' || data.user.role === 'TEACHER') {
+        navigate('/admin-dashboard');
+      } else if (data.user.role === 'STUDENT') {
+        navigate('/dashboard');
       }
-    } catch (error) {
-      console.error('Login error:', error)
-      alert('Network error. Please try again.')
+    
+    } catch (error: any) {
+      console.error('Login error:', error);
+      alert(error.response?.data?.error || 'Login failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -153,6 +147,7 @@ function LoginPage() {
 }
 
 export default LoginPage
+
 
 
 
