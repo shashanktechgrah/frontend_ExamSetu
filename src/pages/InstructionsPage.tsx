@@ -1,4 +1,4 @@
-import api from "../config/api.js";
+import api from "../config/api";
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
