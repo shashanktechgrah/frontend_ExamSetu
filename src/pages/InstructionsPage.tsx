@@ -29,7 +29,7 @@ function InstructionsPage() {
           }
         )
         const data = response.data
-        if (!response.ok) return
+        
         setTestInfo({
           subject: data.subject,
           totalQuestions: data.totalQuestions,
@@ -115,6 +115,7 @@ function InstructionsPage() {
 }
 
 export default InstructionsPage
+
 
 
 
