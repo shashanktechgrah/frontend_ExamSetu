@@ -1,4 +1,4 @@
-import api from "../config/api";
+import api from "/config/api";
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -153,6 +153,7 @@ function LoginPage() {
 }
 
 export default LoginPage
+
 
 
 
