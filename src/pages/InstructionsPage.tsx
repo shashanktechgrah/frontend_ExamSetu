@@ -1,4 +1,4 @@
-import api from "../config/api";
+import api from "../config/api.js";
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -115,6 +115,7 @@ function InstructionsPage() {
 }
 
 export default InstructionsPage
+
 
 
 
