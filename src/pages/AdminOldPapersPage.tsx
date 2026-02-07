@@ -1,3 +1,4 @@
+import api from "../config/api"
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -71,15 +72,12 @@ function AdminOldPapersPage() {
     const loadMeta = async () => {
       try {
         const [cRes, sRes] = await Promise.all([
-          fetch('http://localhost:5000/api/classes'),
-          fetch('http://localhost:5000/api/subjects'),
+          api.get('/api/classes'),
+          api.get('/api/subjects'),
         ])
 
-        const cData = await cRes.json()
-        const sData = await sRes.json()
-
-        if (cRes.ok && Array.isArray(cData)) setClasses(cData)
-        if (sRes.ok && Array.isArray(sData)) setSubjects(sData)
+        if (Array.isArray(cRes.data)) setClasses(cRes.data)
+        if (Array.isArray(sRes.data)) setSubjects(sRes.data)
       } catch {
         // ignore
       }
@@ -89,13 +87,9 @@ function AdminOldPapersPage() {
   }, [])
 
   const loadSources = async () => {
-    const res = await fetch('http://localhost:5000/api/question-sources')
-    const json = await res.json().catch(() => null)
-    if (!res.ok) {
-      throw new Error(json?.error || 'Failed to fetch sources')
-    }
-    if (Array.isArray(json)) {
-      setSources(json)
+    const res = await api.get('/api/question-sources')
+    if (Array.isArray(res.data)) {
+      setSources(res.data)
     }
   }
 
@@ -202,19 +196,12 @@ function AdminOldPapersPage() {
       reader.readAsDataURL(imageFile)
     })
 
-    const res = await fetch('http://localhost:5000/api/uploads/question-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dataUrl, filename: imageFile.name }),
-    })
+    const res = await api.post('/api/uploads/question-image', {
+      dataUrl,
+      filename: imageFile.name,
+    })    
 
-    if (!res.ok) {
-      const j = await res.json().catch(() => null)
-      throw new Error(j?.error || 'Failed to upload image')
-    }
-
-    const j = await res.json()
-    return j?.imageUrl ? String(j.imageUrl) : null
+    return res.data?.imageUrl ? String(res.data.imageUrl) : null
   }
 
   const clearQuestionForm = () => {
@@ -238,16 +225,12 @@ function AdminOldPapersPage() {
       const board = newBoard.trim()
       const paperName = newPaperName.trim()
       const year = newYear.trim()
-      const sourceRes = await fetch('http://localhost:5000/api/question-sources/upsert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ board, paperName, year }),
+      const sourceRes = await api.post('/api/question-sources/upsert', {
+        board,
+        paperName,
+        year,
       })
-      const sourceJson = await sourceRes.json().catch(() => null)
-      if (!sourceRes.ok) {
-        const msg = sourceJson?.details ? `${sourceJson?.error || 'Failed to create paper source'}: ${sourceJson.details}` : sourceJson?.error
-        throw new Error(msg || 'Failed to create paper source')
-      }
+      const sourceJson = sourceRes.data
       const newId = sourceJson?.id
       if (newId) {
         await loadSources()
@@ -302,22 +285,13 @@ function AdminOldPapersPage() {
         payload.correctAnswer = subjectiveAnswer
       }
 
-      const qRes = await fetch('http://localhost:5000/api/question-bank', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-
-      const qJson = await qRes.json().catch(() => null)
-      if (!qRes.ok) {
-        const msg = qJson?.details ? `${qJson?.error || 'Failed to save question'}: ${qJson.details}` : qJson?.error
-        throw new Error(msg || 'Failed to save question')
-      }
+      const qRes = await api.post('/api/question-bank', payload)
+      const qJson = qRes.data
 
       setSuccess('Question saved.')
       return qJson
     } catch (e: any) {
-      setError(e?.message || 'Failed to save')
+      setError(e?.message || 'Failed to save question')
       return null
     } finally {
       setLoading(false)
