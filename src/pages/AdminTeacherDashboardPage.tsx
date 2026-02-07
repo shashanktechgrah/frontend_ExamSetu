@@ -256,7 +256,6 @@ function AdminTeacherDashboardPage() {
       }
 
       const res = await api.post("/api/admin/users", payload)
-      const json = res.data
       setCreateUserSuccess('User created successfully.')
     } catch (e: any) {
       setCreateUserError(e?.response?.data?.error || e?.message || "Failed to create user")
@@ -332,7 +331,7 @@ function AdminTeacherDashboardPage() {
         ...questions[0]
       })
 
-      console.log('Question added successfully:', result)
+      console.log('Question added successfully:')
         
       // Reset form
       setNewPaper({
@@ -358,7 +357,7 @@ function AdminTeacherDashboardPage() {
   const fetchQuestionBank = async () => {
     try {
       const response = await api.get("/api/question-bank")
-      const questions = response.dataa
+      const questions = response.data
       console.log('Question bank:', questions)
       // Update oldPapers state with real data
       setOldPapers(questions)
@@ -976,4 +975,5 @@ function AdminTeacherDashboardPage() {
 }
 
 export default AdminTeacherDashboardPage
+
 
