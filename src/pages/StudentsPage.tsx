@@ -1,3 +1,4 @@
+import api from "../config/api"
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -29,17 +30,16 @@ function StudentsPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`http://localhost:5000/api/students/classmates?userId=${userId}`)
-      const json = await res.json().catch(() => null)
-      if (!res.ok) {
-        const msg = json?.details ? `${json?.error || 'Failed'}: ${json.details}` : json?.error
-        throw new Error(msg || 'Failed to load classmates')
-      }
+      const res = await api.get("/api/students/classmates", {
+        params: { userId }
+      })
+      
+      const json = res.data
       if (Array.isArray(json)) {
         setClassmates(json)
       }
     } catch (e: any) {
-      setError(e?.message || 'Failed to load')
+      setError(e?.response?.data?.error || e?.message || 'Failed to load')
     } finally {
       setLoading(false)
     }
