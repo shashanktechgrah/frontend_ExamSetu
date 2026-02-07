@@ -1,3 +1,4 @@
+import api from "../config/api"
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
@@ -135,9 +136,10 @@ function SubjectSectionPage() {
     if (!userId || role !== 'STUDENT') return
 
     try {
-      const res = await fetch(`http://localhost:5000/api/notifications?userId=${userId}`)
-      const data = await res.json()
-      if (!res.ok) return
+      const res = await api.get("/api/notifications", {
+        params: { userId }
+      })
+      const data = res.data
 
       const mapped: UiNotification[] = (Array.isArray(data) ? data : []).map((n: any) => ({
         type: 'test',
@@ -174,9 +176,11 @@ function SubjectSectionPage() {
       if (!userId || role !== 'STUDENT') return
 
       try {
-        const res = await fetch(`http://localhost:5000/api/students/profile?userId=${userId}`)
-        const data = await res.json()
-        if (!res.ok) return
+        const res = await api.get("/api/students/profile", {
+          params: { userId }
+        })
+        const data = res.data
+
         setProfileMeta({
           className: data?.className != null ? String(data.className) : undefined,
           section: data?.section != null ? String(data.section) : undefined,
@@ -253,21 +257,12 @@ function SubjectSectionPage() {
       }
 
       setStartingMock(true)
-      const response = await fetch('http://localhost:5000/api/mock-tests/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: Number(userId),
-          subject: currentSubject.name,
-          numberOfQuestions: mockQuestionCount
-        })
-      })
-
-      const data = await response.json()
-      if (!response.ok) {
-        alert(data?.error || 'Failed to start mock test')
-        return
-      }
+      const res = await api.post("/api/mock-tests/start", {
+        userId: Number(userId),
+        subject: currentSubject.name,
+        numberOfQuestions: mockQuestionCount
+      }) 
+      const data = res.data
 
       setShowMockConfig(false)
       navigate(`/instructions/${subject}/mock?attemptId=${data.attemptId}`)
@@ -542,10 +537,9 @@ function SubjectSectionPage() {
                             const userId = localStorage.getItem('userId')
                             const role = localStorage.getItem('userRole')
                             if (userId && role === 'STUDENT') {
-                              fetch('http://localhost:5000/api/users/profile-photo', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId, profilePhoto: photo }),
+                              api.post("/api/users/profile-photo", {
+                                userId,
+                                profilePhoto: photo
                               }).catch(() => {})
                             }
                           }}
@@ -599,4 +593,5 @@ function SubjectSectionPage() {
 }
 
 export default SubjectSectionPage
+
 
