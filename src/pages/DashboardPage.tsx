@@ -1,4 +1,4 @@
-import api from "../config/api"
+import api from "../config/api";
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -551,4 +551,5 @@ function DashboardPage() {
 }
 
 export default DashboardPage
+
 
