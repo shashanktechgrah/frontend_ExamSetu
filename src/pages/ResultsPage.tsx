@@ -1,3 +1,4 @@
+import api from "../config/api";
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -119,9 +120,10 @@ function ResultsPage() {
       const role = localStorage.getItem('userRole')
       if (!userId || role !== 'STUDENT') return
       try {
-        const response = await fetch(`http://localhost:5000/api/results?userId=${userId}`)
-        const data = await response.json()
-        if (!response.ok) return
+        const response = await api.get("/api/results", {
+          params: { userId }
+        })
+        const data = response.data
 
         const mapped: TestResult[] = (data || []).map((r: any) => {
           const dt = new Date(r.date)
@@ -179,9 +181,10 @@ function ResultsPage() {
     if (!userId || role !== 'STUDENT') return
 
     try {
-      const res = await fetch(`http://localhost:5000/api/notifications?userId=${userId}`)
-      const data = await res.json()
-      if (!res.ok) return
+      const res = await api.get("/api/notifications", {
+        params: { userId }
+      })
+      const data = res.data
 
       const mapped: UiNotification[] = (Array.isArray(data) ? data : []).map((n: any) => ({
         type: 'test',
@@ -218,9 +221,11 @@ function ResultsPage() {
       if (!userId || role !== 'STUDENT') return
 
       try {
-        const res = await fetch(`http://localhost:5000/api/students/profile?userId=${userId}`)
-        const data = await res.json()
-        if (!res.ok) return
+        const res = await api.get("/api/students/profile", {
+          params: { userId }
+        })
+        const data = res.data
+
         setProfileMeta({
           className: data?.className != null ? String(data.className) : undefined,
           section: data?.section != null ? String(data.section) : undefined,
@@ -293,16 +298,11 @@ function ResultsPage() {
     setResponsesError(null)
     setAttemptResponses([])
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/mock-tests/attempt/${selectedResult.attemptId}/responses?userId=${userId}`
+      const res = await api.get(
+        '/api/mock-tests/attempt/${selectedResult.attemptId}/responses',
+        { params: { userId } }
       )
-      const data = await res.json()
-      if (!res.ok) {
-        setResponsesError(data?.error || 'Failed to load responses')
-        setShowResponsesModal(true)
-        return
-      }
-
+      const data = res.data
       setAttemptResponses(Array.isArray(data?.responses) ? data.responses : [])
       setShowResponsesModal(true)
     } catch (e: any) {
@@ -768,10 +768,9 @@ function ResultsPage() {
                             const userId = localStorage.getItem('userId')
                             const role = localStorage.getItem('userRole')
                             if (userId && role === 'STUDENT') {
-                              fetch('http://localhost:5000/api/users/profile-photo', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId, profilePhoto: photo }),
+                              api.post("/api/users/profile-photo", {
+                                userId,
+                                profilePhoto: photo
                               }).catch(() => {})
                             }
                           }}
@@ -825,3 +824,4 @@ function ResultsPage() {
 }
 
 export default ResultsPage
+
