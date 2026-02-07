@@ -232,19 +232,11 @@ function SubjectSectionPage() {
       setShowMockConfig(true)
       return
     }
-
-    // For now, assume teacher has uploaded test in first test card (full-syllabus) of Physics
-    // If clicking on other test cards, show "no test is there" popup
-    if (subject?.toLowerCase() === 'physics' && testType === 'full-syllabus') {
-      // Navigate to instructions page
-      navigate(`/instructions/${subject}/${testType}`)
-    } else {
-      // Show animated popup "no test is there"
-      setShowNoTestPopup(true)
-      setTimeout(() => {
-        setShowNoTestPopup(false)
-      }, 3000)
-    }
+    // For non-mock tests, show animated popup "no test is there"
+    setShowNoTestPopup(true)
+    setTimeout(() => {
+      setShowNoTestPopup(false)
+    }, 3000)
   }
 
   const handleStartMock = async () => {
@@ -593,5 +585,6 @@ function SubjectSectionPage() {
 }
 
 export default SubjectSectionPage
+
 
 
