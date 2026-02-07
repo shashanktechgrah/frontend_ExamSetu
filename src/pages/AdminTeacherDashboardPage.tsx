@@ -255,7 +255,7 @@ function AdminTeacherDashboardPage() {
         }
       }
 
-      const res = await api.post("/api/admin/users", payload)
+      await api.post("/api/admin/users", payload)
       setCreateUserSuccess('User created successfully.')
     } catch (e: any) {
       setCreateUserError(e?.response?.data?.error || e?.message || "Failed to create user")
@@ -324,7 +324,7 @@ function AdminTeacherDashboardPage() {
         questions.push(questionData)
       }
 
-      const response = await api.post("/api/question-bank", {
+      await api.post("/api/question-bank", {
         classId: 1,
         subjectId: 1,
         sourceId: null,
@@ -368,7 +368,7 @@ function AdminTeacherDashboardPage() {
 
   const handleDeletePaper = async (paperId: string) => {
     try {
-      const response = await api.delete(`/api/question-bank/${paperId}`)
+      await api.delete(`/api/question-bank/${paperId}`)
       setOldPapers(oldPapers.filter(paper => paper.id !== paperId))
       console.log('Paper deleted successfully:', paperId)
     } catch (error) {
@@ -975,5 +975,6 @@ function AdminTeacherDashboardPage() {
 }
 
 export default AdminTeacherDashboardPage
+
 
 
