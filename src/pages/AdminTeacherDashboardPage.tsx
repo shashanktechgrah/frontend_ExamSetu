@@ -1,3 +1,4 @@
+import api from "../config/api"
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -141,9 +142,15 @@ function AdminTeacherDashboardPage() {
 
   const fetchAnalyticsData = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/analytics?class=${selectedClass}&section=${selectedSection}&subject=${selectedSubject}`)
-      const data = await response.json()
-      
+      const response = await api.get("/api/analytics", {
+        params: {
+          class: selectedClass,
+          section: selectedSection,
+          subject: selectedSubject
+        }
+      })
+      const data = response.data
+
       // Update state with real data
       if (data.testAnalytics) {
         setTestAnalytics({
@@ -173,11 +180,11 @@ function AdminTeacherDashboardPage() {
 
   const fetchClasses = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/classes')
-      const classesData = await response.json()
+      const response = await api.get("/api/classes")
+      const classesData = response.data
       console.log('Classes:', classesData)
 
-      if (response.ok && Array.isArray(classesData)) {
+      if (Array.isArray(classesData)) {
         setClassOptions(classesData)
       }
     } catch (error) {
@@ -248,21 +255,11 @@ function AdminTeacherDashboardPage() {
         }
       }
 
-      const res = await fetch('http://localhost:5000/api/admin/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-
-      const json = await res.json().catch(() => null)
-      if (!res.ok) {
-        const msg = json?.details ? `${json?.error || 'Failed to create user'}: ${json.details}` : json?.error
-        throw new Error(msg || 'Failed to create user')
-      }
-
+      const res = await api.post("/api/admin/users", payload)
+      const json = res.data
       setCreateUserSuccess('User created successfully.')
     } catch (e: any) {
-      setCreateUserError(e?.message || 'Failed to create user')
+      setCreateUserError(e?.response?.data?.error || e?.message || "Failed to create user")
     } finally {
       setCreatingUser(false)
     }
@@ -270,8 +267,8 @@ function AdminTeacherDashboardPage() {
 
   const fetchSubjects = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/subjects')
-      const subjectsData = await response.json()
+      const response = await api.get("/api/subjects")
+      const subjectsData = response.data
       console.log('Subjects:', subjectsData)
     } catch (error) {
       console.error('Failed to fetch subjects:', error)
@@ -328,52 +325,40 @@ function AdminTeacherDashboardPage() {
         questions.push(questionData)
       }
 
-      const response = await fetch('http://localhost:5000/api/question-bank', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          classId: 1, // Will be dynamic based on selected class
-          subjectId: 1, // Will be dynamic based on selected subject
-          sourceId: null,
-          ...questions[0] // Send first question as example
-        })
+      const response = await api.post("/api/question-bank", {
+        classId: 1,
+        subjectId: 1,
+        sourceId: null,
+        ...questions[0]
       })
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log('Question added successfully:', result)
+      console.log('Question added successfully:', result)
         
-        // Reset form
-        setNewPaper({
-          board: '',
-          paperName: '',
-          year: '',
-          class: '',
-          subject: '',
-          questionType: 'objective',
-          questionText: '',
-          answer: '',
-          marks: 1,
-          noOfQuestions: 1
-        })
-        setShowAddPaperForm(false)
-        
-        // Refresh papers list
-        fetchQuestionBank()
-      } else {
-        console.error('Failed to add question')
-      }
+      // Reset form
+      setNewPaper({
+        board: '',
+        paperName: '',
+        year: '',
+        class: '',
+        subject: '',
+        questionType: 'objective',
+        questionText: '',
+        answer: '',
+        marks: 1,
+        noOfQuestions: 1
+      })
+      setShowAddPaperForm(false) 
+      // Refresh papers list
+      fetchQuestionBank()
     } catch (error) {
-      console.error('Error adding question:', error)
+      console.error('Failed to add question', error)
     }
   }
 
   const fetchQuestionBank = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/question-bank')
-      const questions = await response.json()
+      const response = await api.get("/api/question-bank")
+      const questions = response.dataa
       console.log('Question bank:', questions)
       // Update oldPapers state with real data
       setOldPapers(questions)
@@ -384,18 +369,11 @@ function AdminTeacherDashboardPage() {
 
   const handleDeletePaper = async (paperId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/question-bank/${paperId}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        setOldPapers(oldPapers.filter(paper => paper.id !== paperId))
-        console.log('Paper deleted successfully:', paperId)
-      } else {
-        console.error('Failed to delete paper')
-      }
+      const response = await api.delete(`/api/question-bank/${paperId}`)
+      setOldPapers(oldPapers.filter(paper => paper.id !== paperId))
+      console.log('Paper deleted successfully:', paperId)
     } catch (error) {
-      console.error('Error deleting paper:', error)
+      console.error('Failed to delete paper', error)
     }
   }
 
@@ -998,3 +976,4 @@ function AdminTeacherDashboardPage() {
 }
 
 export default AdminTeacherDashboardPage
+
