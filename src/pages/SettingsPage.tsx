@@ -1,3 +1,4 @@
+import api from "../config/api";
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,10 +48,9 @@ function SettingsPage() {
     const userId = localStorage.getItem('userId')
     const role = localStorage.getItem('userRole')
     if (userId && role === 'STUDENT') {
-      fetch('http://localhost:5000/api/users/profile-photo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, profilePhoto: photo }),
+      api.post("/api/users/profile-photo", {
+        userId,
+        profilePhoto: photo,
       }).catch(() => {})
     }
   }
@@ -62,9 +62,11 @@ function SettingsPage() {
       if (!userId || role !== 'STUDENT') return
 
       try {
-        const res = await fetch(`http://localhost:5000/api/students/profile?userId=${userId}`)
-        const data = await res.json()
-        if (!res.ok) return
+        const res = await api.get(`/api/students/profile`, {
+          params: { userId }
+        })
+        const data = res.data
+
         setProfileMeta({
           className: data?.className != null ? String(data.className) : undefined,
           section: data?.section != null ? String(data.section) : undefined,
@@ -260,3 +262,4 @@ function SettingsPage() {
 }
 
 export default SettingsPage
+
