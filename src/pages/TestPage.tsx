@@ -258,16 +258,14 @@ function TestPage() {
             answers: mappedAnswers,
           }
         )
-        
+        const result = response.data 
+        console.log("Submit success:", result) // ✅ Use result (important)
+              
         setShowSubmitConfirm(false)
         setShowThankYou(true)
       } catch (error) {
         console.error('Submit failed', error)
-        const message =
-          error?.response?.data?.error ||
-          error?.message ||
-          "Failed to submit test"
-        alert(message)
+        alert("Failed to submit test")
       }
     }
 
@@ -515,6 +513,7 @@ function TestPage() {
 }
 
 export default TestPage
+
 
 
 
