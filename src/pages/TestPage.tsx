@@ -73,7 +73,7 @@ function TestPage() {
       if (!attemptId || !userId) return
       try {
         setLoadingAttempt(true)
-        const response = await fetch(`http://localhost:5000/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
+        const response = await fetch(`/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
         const data = await response.json()
         if (!response.ok) {
           alert(data?.error || 'Failed to load mock test')
@@ -237,7 +237,7 @@ function TestPage() {
       }
       try {
         // We need backend questionId, so re-fetch attempt details for mapping orderNo->questionId
-        const detailResp = await fetch(`http://localhost:5000/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
+        const detailResp = await fetch(`/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
         const detail = await detailResp.json()
         if (!detailResp.ok) {
           alert(detail?.error || 'Failed to submit')
@@ -253,7 +253,7 @@ function TestPage() {
           }
         })
 
-        const response = await fetch(`http://localhost:5000/api/mock-tests/attempt/${attemptId}/submit`, {
+        const response = await fetch(`/api/mock-tests/attempt/${attemptId}/submit`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -520,3 +520,4 @@ function TestPage() {
 }
 
 export default TestPage
+
