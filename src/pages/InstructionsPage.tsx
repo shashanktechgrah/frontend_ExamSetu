@@ -1,4 +1,4 @@
-import api from "../config/api";
+`/api/mock-tests/attempt/${attemptId}`import api from "../config/api";
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -23,7 +23,7 @@ function InstructionsPage() {
       if (!attemptId || !userId) return
       try {
         const response = await api.get(
-          '/api/mock-tests/attempt/${attemptId}',
+          `/api/mock-tests/attempt/${attemptId}`,
           {
             params: { userId }
           }
