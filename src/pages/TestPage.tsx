@@ -1,3 +1,4 @@
+import api from "../config/api"
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -66,20 +67,18 @@ function TestPage() {
     { id: 30, type: 'subjective', question: 'Explain the concept of energy and its different forms.', characterLimit: 200 },
   ]
 
-  const [questions, setQuestions] = useState<Question[]>(legacyQuestions)
+  const [questions, setQuestions] = useState<Question[]>([])
 
   useEffect(() => {
     const loadAttempt = async () => {
       if (!attemptId || !userId) return
       try {
         setLoadingAttempt(true)
-        const response = await fetch(`/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
-        const data = await response.json()
-        if (!response.ok) {
-          alert(data?.error || 'Failed to load mock test')
-          return
-        }
-
+        const response = await api.get(
+          `/api/mock-tests/attempt/${attemptId}`,
+          { params: { userId } }
+        )
+        const data = response.data
         setAttemptMeta({
           totalQuestions: data.totalQuestions,
           durationMin: data.durationMin,
@@ -237,12 +236,11 @@ function TestPage() {
       }
       try {
         // We need backend questionId, so re-fetch attempt details for mapping orderNo->questionId
-        const detailResp = await fetch(`/api/mock-tests/attempt/${attemptId}?userId=${userId}`)
-        const detail = await detailResp.json()
-        if (!detailResp.ok) {
-          alert(detail?.error || 'Failed to submit')
-          return
-        }
+        const detailResp = await api.get(
+          `/api/mock-tests/attempt/${attemptId}`,
+          { params: { userId } }
+        )
+        const detail = detailResp.data
 
         const mappedAnswers = (detail.questions || []).map((q: any) => {
           const a = answers[Number(q.orderNo)] || {}
@@ -253,21 +251,15 @@ function TestPage() {
           }
         })
 
-        const response = await fetch(`/api/mock-tests/attempt/${attemptId}/submit`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const response = await api.post(
+          `/api/mock-tests/attempt/${attemptId}/submit`,
+          {
             userId: Number(userId),
             answers: mappedAnswers,
-          }),
-        })
-
-        const result = await response.json()
-        if (!response.ok) {
-          alert(result?.error || 'Failed to submit test')
-          return
-        }
-
+          }
+        )
+        const result = response.data
+        
         setShowSubmitConfirm(false)
         setShowThankYou(true)
       } catch (error) {
@@ -520,4 +512,5 @@ function TestPage() {
 }
 
 export default TestPage
+
 
