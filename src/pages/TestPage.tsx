@@ -67,7 +67,7 @@ function TestPage() {
     { id: 30, type: 'subjective', question: 'Explain the concept of energy and its different forms.', characterLimit: 200 },
   ]
 
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<Question[]>(legacyQuestions)
 
   useEffect(() => {
     const loadAttempt = async () => {
@@ -258,7 +258,6 @@ function TestPage() {
             answers: mappedAnswers,
           }
         )
-        const result = response.data
         
         setShowSubmitConfirm(false)
         setShowThankYou(true)
@@ -512,5 +511,6 @@ function TestPage() {
 }
 
 export default TestPage
+
 
 
