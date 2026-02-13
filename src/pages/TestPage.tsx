@@ -263,7 +263,11 @@ function TestPage() {
         setShowThankYou(true)
       } catch (error) {
         console.error('Submit failed', error)
-        alert('Failed to submit test')
+        const message =
+          error?.response?.data?.error ||
+          error?.message ||
+          "Failed to submit test"
+        alert(message)
       }
     }
 
@@ -511,6 +515,7 @@ function TestPage() {
 }
 
 export default TestPage
+
 
 
 
