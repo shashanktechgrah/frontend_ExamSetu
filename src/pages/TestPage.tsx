@@ -86,12 +86,12 @@ function TestPage() {
         })
         setTimeRemaining(Number(data.durationMin) * 60)
 
-        const mapped: Question[] = (data.questions || []).map((q: any, idx: number) => ({
-          id: idx + 1,
+        const mapped: Question[] = (data.questions || []).map((q: any) => ({
+          id: Number(q.id),
           type: q.type,
           question: q.questionText,
           options: (q.options || []).map((o: any) => ({ id: Number(o.id), text: String(o.text) })),
-          characterLimit: q.type === 'subjective' ? 200 : undefined,
+          characterLimit: q.type === 'subjective' ? 1000 : undefined,
         }))
 
         setQuestions(mapped)
@@ -355,6 +355,7 @@ function TestPage() {
                   className="subjective-input"
                   placeholder="........."
                   value={answers[currentQuestion]?.answerText || ''}
+                  maxLength={currentQ.characterLimit || 1000}
                   onChange={(e) => {
                     const value = e.target.value
                     if (!currentQ.characterLimit || value.length <= currentQ.characterLimit) {
@@ -379,7 +380,7 @@ function TestPage() {
                     style={{ display: 'none' }}
                   />
                   <span className="character-count">
-                    {answers[currentQuestion]?.answerText?.length || 0}/{currentQ.characterLimit || 200} characters
+                    {answers[currentQuestion]?.answerText?.length || 0}/{currentQ.characterLimit || 1000} characters
                   </span>
                 </div>
               </div>
@@ -513,6 +514,7 @@ function TestPage() {
 }
 
 export default TestPage
+
 
 
 
