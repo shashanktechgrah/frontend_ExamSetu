@@ -13,6 +13,7 @@ import AdminTeacherDashboardPage from './pages/AdminTeacherDashboardPage'
 import AdminOldPapersPage from './pages/AdminOldPapersPage'
 import StudentsPage from './pages/StudentsPage'
 import AdminStudentsPage from './pages/AdminStudentsPage'
+import AdminResultsPage from './pages/AdminResultsPage'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/admin-dashboard" element={<AdminTeacherDashboardPage />} />
         <Route path="/admin-students" element={<AdminStudentsPage />} />
+        <Route path="/admin-results" element={<AdminResultsPage />} />
         <Route path="/admin-old-papers" element={<AdminOldPapersPage />} />
         <Route path="/students" element={<StudentsPage />} />
         <Route path="/subject/:subject" element={<SubjectSectionPage />} />
