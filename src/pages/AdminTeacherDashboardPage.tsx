@@ -407,7 +407,14 @@ function AdminTeacherDashboardPage() {
             <span className="nav-icon">📄</span>
             <span className="nav-text">Tests</span>
           </a>
-          <a href="#" className="nav-item">
+          <a
+            href="#"
+            className="nav-item"
+            onClick={(e) => {
+              e.preventDefault()
+              navigate('/admin-results')
+            }}
+          >          
             <span className="nav-icon">📊</span>
             <span className="nav-text">Results</span>
           </a>
@@ -975,6 +982,7 @@ function AdminTeacherDashboardPage() {
 }
 
 export default AdminTeacherDashboardPage
+
 
 
 
