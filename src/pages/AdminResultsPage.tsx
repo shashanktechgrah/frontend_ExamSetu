@@ -1,3 +1,4 @@
+import API_BASE_URL from "../config/api"
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -114,8 +115,8 @@ function AdminResultsPage() {
 
   const loadFilters = async () => {
     const [clsRes, subjRes] = await Promise.all([
-      fetch('http://localhost:5000/api/classes'),
-      fetch('http://localhost:5000/api/subjects'),
+      fetch(`${API_BASE_URL}/api/classes`),
+      fetch(`${API_BASE_URL}/api/subjects`),
     ])
 
     const clsJson = await clsRes.json().catch(() => null)
@@ -141,7 +142,7 @@ function AdminResultsPage() {
     if (selectedSubjectId !== '') params.set('subjectId', String(selectedSubjectId))
     if (selectedTestType) params.set('testType', selectedTestType)
 
-    const res = await fetch(`http://localhost:5000/api/admin/results?${params.toString()}`)
+    const res = await fetch(`${API_BASE_URL}/api/admin/results?${params.toString()}`)
     const json = await res.json().catch(() => null)
     if (!res.ok) {
       const msg = json?.details ? `${json?.error || 'Failed'}: ${json.details}` : json?.error
@@ -231,7 +232,7 @@ function AdminResultsPage() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/mock-tests/attempt/${row.attemptId}/responses?userId=${userId}`
+        `${API_BASE_URL}/api/mock-tests/attempt/${row.attemptId}/responses?userId=${userId}`
       )
       const json = await res.json().catch(() => null)
       if (!res.ok) {
