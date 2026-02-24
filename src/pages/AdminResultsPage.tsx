@@ -115,24 +115,12 @@ function AdminResultsPage() {
 
   const loadFilters = async () => {
     const [clsRes, subjRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/classes`),
-      fetch(`${API_BASE_URL}/api/subjects`),
+      api.get("/api/classes"),
+      api.get("/api/subjects"),
     ])
 
-    const clsJson = await clsRes.json().catch(() => null)
-    if (!clsRes.ok) {
-      const msg = clsJson?.details ? `${clsJson?.error || 'Failed'}: ${clsJson.details}` : clsJson?.error
-      throw new Error(msg || 'Failed to load classes')
-    }
-
-    const subjJson = await subjRes.json().catch(() => null)
-    if (!subjRes.ok) {
-      const msg = subjJson?.details ? `${subjJson?.error || 'Failed'}: ${subjJson.details}` : subjJson?.error
-      throw new Error(msg || 'Failed to load subjects')
-    }
-
-    setClasses(Array.isArray(clsJson) ? clsJson : [])
-    setSubjects(Array.isArray(subjJson) ? subjJson : [])
+    setClasses(Array.isArray(clsRes.data) ? clsRes.data : [])
+    setSubjects(Array.isArray(subjRes.data) ? subjRes.data : [])
   }
 
   const loadResults = async () => {
@@ -142,14 +130,16 @@ function AdminResultsPage() {
     if (selectedSubjectId !== '') params.set('subjectId', String(selectedSubjectId))
     if (selectedTestType) params.set('testType', selectedTestType)
 
-    const res = await fetch(`${API_BASE_URL}/api/admin/results?${params.toString()}`)
-    const json = await res.json().catch(() => null)
-    if (!res.ok) {
-      const msg = json?.details ? `${json?.error || 'Failed'}: ${json.details}` : json?.error
-      throw new Error(msg || 'Failed to load results')
-    }
+    const res = await api.get("/api/admin/results", {
+      params: {
+        classId: selectedClassId || undefined,
+        section: selectedSection || undefined,
+        subjectId: selectedSubjectId || undefined,
+        testType: selectedTestType || undefined,
+      },
+    })
 
-    setAttempts(Array.isArray(json) ? json : [])
+    setAttempts(Array.isArray(res.data) ? res.data : [])
   }
 
   useEffect(() => {
@@ -231,14 +221,14 @@ function AdminResultsPage() {
     setAttemptResponses([])
 
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/api/mock-tests/attempt/${row.attemptId}/responses?userId=${userId}`
+      const res = await api.get(
+        `/api/mock-tests/attempt/${row.attemptId}/responses`,
+        {
+          params: { userId },
+        }
       )
-      const json = await res.json().catch(() => null)
-      if (!res.ok) {
-        throw new Error(json?.error || 'Failed to load responses')
-      }
-      setAttemptResponses(Array.isArray(json?.responses) ? json.responses : [])
+      
+      setAttemptResponses(Array.isArray(res.data?.responses) ? res.data.responses : [])
     } catch (e: any) {
       setResponsesError(e?.message || 'Failed to load responses')
     } finally {
