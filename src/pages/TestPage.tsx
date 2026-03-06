@@ -86,8 +86,8 @@ function TestPage() {
         })
         setTimeRemaining(Number(data.durationMin) * 60)
 
-        const mapped: Question[] = (data.questions || []).map((q: any) => ({
-          id: Number(q.id),
+        const mapped: Question[] = (data?.questions || []).map((q: any) => ({
+          id: Number(q.orderNo),
           type: q.type,
           question: q.questionText,
           options: (q.options || []).map((o: any) => ({ id: Number(o.id), text: String(o.text) })),
@@ -281,7 +281,11 @@ function TestPage() {
     navigate('/results')
   }
 
-  const currentQ = questions.find((q) => q.id === currentQuestion)!
+  const currentQ = questions.find((q) => q.id === currentQuestion)
+  if (!currentQ) {
+  return <div style={{padding:20}}>Loading questions...</div>
+  }
+  
   const canSaveAndNext = (() => {
     const a = answers[currentQuestion]
     if (!a) return false
@@ -514,6 +518,7 @@ function TestPage() {
 }
 
 export default TestPage
+
 
 
 
